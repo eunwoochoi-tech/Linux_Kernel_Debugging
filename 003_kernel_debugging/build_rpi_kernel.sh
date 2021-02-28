@@ -5,15 +5,16 @@ CROSS_COMPILE=arm-linux-gnueabihf-
 
 echo "configure build out path"
 
-KERNEL_TOP_PATH=$(pwd)
+KERNEL_TOP_PATH=$(cd ~; pwd)
 OUTPUT="$KERNEL_TOP_PATH/out"
+echo "$KERNEL_TOP_PATH"
 echo "$OUTPUT"
 
 KERNEL=kernel7
 BUILD_LOG="$KERNEL_TOP_PATH/rpi_build_log.txt"
 
 echo "move kernel source"
-cd linux
+cd $KERNEL_TOP_PATH/linux
 
 echo "make defconfig"
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE O=$OUTPUT bcm2709_defconfig
