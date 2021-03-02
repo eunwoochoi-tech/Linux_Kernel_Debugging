@@ -5,7 +5,7 @@ CROSS_COMPILE=arm-linux-gnueabihf-
 
 echo "configure build out path"
 
-KERNEL_TOP_PATH=$(cd ~; pwd)
+KERNEL_TOP_PATH=$(cd ~; pwd;)
 OUTPUT="$KERNEL_TOP_PATH/out"
 echo "$KERNEL_TOP_PATH"
 echo "$OUTPUT"
