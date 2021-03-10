@@ -1,5 +1,5 @@
 ## 1. kthread.c
-### Line 294 ~ 313
+### Line 294 ~ 359(__kthread_create_on_node)
 ### kernel thread생성시 irq thread인지 확인하여 irq thread에 대한 정보를 출력
 ``` c
 283 struct task_struct *__kthread_create_on_node(int (*threadfn)(void *data),
@@ -32,12 +32,14 @@
 311 +  		printk("[+] irq_thread handler : %pS caller : (%pS) \n", irq_threadfn, (void*)__builtin_return_address(0));
 312 +  		dump_stack();
 313 +  	}
+	---
+359  }
 ```
 
 
 
 ## 2. bcm2835-mailbox.c
-### Line 75 ~ 104, 162 ~ 211
+### Line 75 ~ 104(bcm2835_mbox_irq, bcm2835_mbox_thread_irq), 162 ~ 211(bcm2835_mbox_probe)
 ### irq_thread를 직접 생성해보기 위해 mailbox의 probe함수에서 irq등록함수 및 interrupt handler의 return값 수정
 ``` c
  75 + static irqreturn_t bcm2835_mbox_thread_irq(int irq, void* dev_id)
