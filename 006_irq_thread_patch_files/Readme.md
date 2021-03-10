@@ -71,55 +71,17 @@
 
 ---
 
-static int bcm2835_mbox_probe(struct platform_device *pdev)
-{
-	struct device *dev = &pdev->dev;
-	int ret = 0;
-	struct resource *iomem;
-	struct bcm2835_mbox *mbox;
-
-	mbox = devm_kzalloc(dev, sizeof(*mbox), GFP_KERNEL);
-	if (mbox == NULL)
-		return -ENOMEM;
-	spin_lock_init(&mbox->lock);
-
-	//ret = devm_request_irq(dev, platform_get_irq(pdev, 0),
-	//		       bcm2835_mbox_irq, 0, dev_name(dev), mbox);
-	ret = devm_request_irq(dev, platform_get_irq(pdev, 0), bcm2835_mbox_irq, bcm2835_mbox_thread_irq, dev_name(dev), mbox);
-
-	if (ret) {
-		dev_err(dev, "Failed to register a mailbox IRQ handler: %d\n",
-			ret);
-		return -ENODEV;
-	}
-
-	iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	mbox->regs = devm_ioremap_resource(&pdev->dev, iomem);
-	if (IS_ERR(mbox->regs)) {
-		ret = PTR_ERR(mbox->regs);
-		dev_err(&pdev->dev, "Failed to remap mailbox regs: %d\n", ret);
-		return ret;
-	}
-
-	mbox->controller.txdone_poll = true;
-	mbox->controller.txpoll_period = 5;
-	mbox->controller.ops = &bcm2835_mbox_chan_ops;
-	mbox->controller.of_xlate = &bcm2835_mbox_index_xlate;
-	mbox->controller.dev = dev;
-	mbox->controller.num_chans = 1;
-	mbox->controller.chans = devm_kzalloc(dev,
-		sizeof(*mbox->controller.chans), GFP_KERNEL);
-	if (!mbox->controller.chans)
-		return -ENOMEM;
-
-	ret = mbox_controller_register(&mbox->controller);
-	if (ret)
-		return ret;
-
-	platform_set_drvdata(pdev, mbox);
-	dev_info(dev, "mailbox enabled\n");
-
-	return ret;
-}
+162  static int bcm2835_mbox_probe(struct platform_device *pdev)
+163  {
+164	struct device *dev = &pdev->dev;
+165	int ret = 0;
+166	struct resource *iomem;
+167	struct bcm2835_mbox *mbox;
+        ---
+174	//ret = devm_request_irq(dev, platform_get_irq(pdev, 0),
+175	//		       bcm2835_mbox_irq, 0, dev_name(dev), mbox);
+176	ret = devm_request_irq(dev, platform_get_irq(pdev, 0), bcm2835_mbox_irq, bcm2835_mbox_thread_irq, dev_name(dev), mbox);
+	---
+211  }
 
 ```
