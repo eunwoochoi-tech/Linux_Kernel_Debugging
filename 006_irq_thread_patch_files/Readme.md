@@ -54,20 +54,20 @@
  88 + 	return IRQ_HANDLED;
  89 + }
  90 +
- 91 + static irqreturn_t bcm2835_mbox_irq(int irq, void *dev_id)
- 92 + {
- 93 + 	struct bcm2835_mbox *mbox = dev_id;
- 94 + 	struct device *dev = mbox->controller.dev;
- 95 + 	struct mbox_chan *link = &mbox->controller.chans[0];
- 96 +
- 97 + 	while (!(readl(mbox->regs + MAIL0_STA) & ARM_MS_EMPTY)) {
- 98 + 		u32 msg = readl(mbox->regs + MAIL0_RD);
- 99 + 		dev_dbg(dev, "Reply 0x%08X\n", msg);
-100 + 		mbox_chan_received_data(link, &msg);
-101 + 	}
-102 + 	//return IRQ_HANDLED;
-103 + 	return IRQ_WAKE_THREAD;
-104 + }
+ 91   static irqreturn_t bcm2835_mbox_irq(int irq, void *dev_id)
+ 92   {
+ 93   	struct bcm2835_mbox *mbox = dev_id;
+ 94  	struct device *dev = mbox->controller.dev;
+ 95  	struct mbox_chan *link = &mbox->controller.chans[0];
+ 96 
+ 97   	while (!(readl(mbox->regs + MAIL0_STA) & ARM_MS_EMPTY)) {
+ 98   		u32 msg = readl(mbox->regs + MAIL0_RD);
+ 99   		dev_dbg(dev, "Reply 0x%08X\n", msg);
+100   		mbox_chan_received_data(link, &msg);
+101   	}
+102   	//return IRQ_HANDLED;
+103 +  	return IRQ_WAKE_THREAD;
+104   }
 
 ---
 
