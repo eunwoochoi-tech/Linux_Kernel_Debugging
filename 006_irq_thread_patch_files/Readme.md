@@ -33,3 +33,93 @@
 312 +  		dump_stack();
 313 +  	}
 ```
+
+## 2. b
+### Line 75 ~ 104, 162 ~ 211
+###
+``` c
+ 75 + static irqreturn_t bcm2835_mbox_thread_irq(int irq, void* dev_id)
+ 76 + {
+ 77 +   void* stack;
+ 78 + 	struct thread_info* current_thread;
+ 79 +
+ 80 + 	stack = current->stack;
+ 81 + 	current_thread = (struct thread_info*)stack;
+ 82 +
+ 83 +   trace_printk("irq=%d, process: %s \n", irq, current->comm);
+ 84 + 	trace_printk("[+] in_interrupt: 0x%08x, preempt_count = 0x%08x, stack = 0x%08lx \n", (unsigned int)in_interrupt(), (unsigned int)current_thread->preempt_count, (long unsigned int)stack);
+ 85 +
+ 86 + 	dump_stack();
+ 87 +
+ 88 + 	return IRQ_HANDLED;
+ 89 + }
+ 90 +
+ 91 + static irqreturn_t bcm2835_mbox_irq(int irq, void *dev_id)
+ 92 + {
+ 93 + 	struct bcm2835_mbox *mbox = dev_id;
+ 94 + 	struct device *dev = mbox->controller.dev;
+ 95 + 	struct mbox_chan *link = &mbox->controller.chans[0];
+ 96 +
+ 97 + 	while (!(readl(mbox->regs + MAIL0_STA) & ARM_MS_EMPTY)) {
+ 98 + 		u32 msg = readl(mbox->regs + MAIL0_RD);
+ 99 + 		dev_dbg(dev, "Reply 0x%08X\n", msg);
+100 + 		mbox_chan_received_data(link, &msg);
+101 + 	}
+102 + 	//return IRQ_HANDLED;
+103 + 	return IRQ_WAKE_THREAD;
+104 + }
+
+---
+
+static int bcm2835_mbox_probe(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	int ret = 0;
+	struct resource *iomem;
+	struct bcm2835_mbox *mbox;
+
+	mbox = devm_kzalloc(dev, sizeof(*mbox), GFP_KERNEL);
+	if (mbox == NULL)
+		return -ENOMEM;
+	spin_lock_init(&mbox->lock);
+
+	//ret = devm_request_irq(dev, platform_get_irq(pdev, 0),
+	//		       bcm2835_mbox_irq, 0, dev_name(dev), mbox);
+	ret = devm_request_irq(dev, platform_get_irq(pdev, 0), bcm2835_mbox_irq, bcm2835_mbox_thread_irq, dev_name(dev), mbox);
+
+	if (ret) {
+		dev_err(dev, "Failed to register a mailbox IRQ handler: %d\n",
+			ret);
+		return -ENODEV;
+	}
+
+	iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	mbox->regs = devm_ioremap_resource(&pdev->dev, iomem);
+	if (IS_ERR(mbox->regs)) {
+		ret = PTR_ERR(mbox->regs);
+		dev_err(&pdev->dev, "Failed to remap mailbox regs: %d\n", ret);
+		return ret;
+	}
+
+	mbox->controller.txdone_poll = true;
+	mbox->controller.txpoll_period = 5;
+	mbox->controller.ops = &bcm2835_mbox_chan_ops;
+	mbox->controller.of_xlate = &bcm2835_mbox_index_xlate;
+	mbox->controller.dev = dev;
+	mbox->controller.num_chans = 1;
+	mbox->controller.chans = devm_kzalloc(dev,
+		sizeof(*mbox->controller.chans), GFP_KERNEL);
+	if (!mbox->controller.chans)
+		return -ENOMEM;
+
+	ret = mbox_controller_register(&mbox->controller);
+	if (ret)
+		return ret;
+
+	platform_set_drvdata(pdev, mbox);
+	dev_info(dev, "mailbox enabled\n");
+
+	return ret;
+}
+
+```
