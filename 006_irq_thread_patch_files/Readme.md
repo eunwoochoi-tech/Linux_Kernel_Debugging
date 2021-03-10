@@ -1,4 +1,4 @@
-## 
+## 1. kthread.c
 ### Line 294 ~ 313
 ### kernel thread생성시 irq thread인지 확인하여 irq thread에 대한 정보를 출력
 ``` c
