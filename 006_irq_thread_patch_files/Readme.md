@@ -38,7 +38,7 @@
 
 ## 2. bcm2835-mailbox.c
 ### Line 75 ~ 104, 162 ~ 211
-###
+### irq_thread를 직접 생성해보기 위해 mailbox의 probe함수에서 irq등록함수 및 interrupt handler의 return값 수정
 ``` c
  75 + static irqreturn_t bcm2835_mbox_thread_irq(int irq, void* dev_id)
  76 + {
@@ -82,7 +82,7 @@
         ---
 174	//ret = devm_request_irq(dev, platform_get_irq(pdev, 0),
 175	//		       bcm2835_mbox_irq, 0, dev_name(dev), mbox);
-176	ret = devm_request_irq(dev, platform_get_irq(pdev, 0), bcm2835_mbox_irq, bcm2835_mbox_thread_irq, dev_name(dev), mbox);
+176 +	ret = devm_request_irq(dev, platform_get_irq(pdev, 0), bcm2835_mbox_irq, bcm2835_mbox_thread_irq, dev_name(dev), mbox);
 	---
 211  }
 
