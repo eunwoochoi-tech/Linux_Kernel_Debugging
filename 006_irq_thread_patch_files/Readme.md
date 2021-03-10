@@ -52,7 +52,8 @@
  81 + 	current_thread = (struct thread_info*)stack;
  82 +
  83 +   trace_printk("irq=%d, process: %s \n", irq, current->comm);
- 84 + 	trace_printk("[+] in_interrupt: 0x%08x, preempt_count = 0x%08x, stack = 0x%08lx \n", (unsigned int)in_interrupt(), (unsigned int)current_thread->preempt_count, (long unsigned int)stack);
+ 84 + 	trace_printk("[+] in_interrupt: 0x%08x, preempt_count = 0x%08x, stack = 0x%08lx \n",
+ 	(unsigned int)in_interrupt(), (unsigned int)current_thread->preempt_count, (long unsigned int)stack);
  85 +
  86 + 	dump_stack();
  87 +
