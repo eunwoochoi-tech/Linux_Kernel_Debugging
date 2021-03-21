@@ -3,8 +3,8 @@
 
 ### line 36 ~ 37 : workqueue를 사용하기 위해 헤더파일 include 및 work구조체 선언
 ``` c
-  #include <linux/workqueue.h>
-  struct work_struct bcm2835_mbox_work;
++   #include <linux/workqueue.h>
++   struct work_struct bcm2835_mbox_work;
 ```
 
 ### line 77 ~ 89 : 인터럽트 후반부를 처리할 콜백함수 선언
@@ -38,10 +38,10 @@ static irqreturn_t bcm2835_mbox_irq(int irq, void *dev_id)
         mbox_chan_received_data(link, &msg);
     }
 
-+     schedule_work(&bcm2835_mbox_work);
++   schedule_work(&bcm2835_mbox_work);
 
-+     return IRQ_HANDLED;
-+     // return IRQ_WAKE_THREAD;
++   return IRQ_HANDLED;
++   // return IRQ_WAKE_THREAD;
 }
 ```
 
