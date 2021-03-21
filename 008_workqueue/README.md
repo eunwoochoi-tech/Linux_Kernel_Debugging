@@ -19,4 +19,5 @@
  ```
  - workqueue_execute_start와 workqueue_execute_end의 실행시간을 계산하여 work의 실행시간 측정 가능
    -> 252.974783(end) - 252.964518(start) = 0.010265초 = 10.265ms
-<img width="1271" alt="Screen Shot 2021-03-21 at 2 41 04 PM" src="https://user-images.githubusercontent.com/50316116/111895102-931cf800-8a53-11eb-8fbf-d9cf6e50c9ea.png">
+
+![img](https://user-images.githubusercontent.com/50316116/111895466-0aec2200-8a56-11eb-9617-b6b54230dccd.png)
