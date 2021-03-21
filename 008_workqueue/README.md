@@ -2,7 +2,7 @@
 
 ### 1. insert_work 호출
  - 4905, 4906 라인을 보면 sched_wakeup 및 sched_switch가 발생하여 워커 스레드를 실행
- - 4907 ~ 4918 라인에서 워커 스레드의 핸들러 함수인 worker_thread의 ftrace출력 및 워크 처리루틴 실행
+ - 4907 ~ 4918 worker_thread 내부에서 호출하는 process_one_work의 ftrace출력 및 워크 처리루틴 실행
  ```c
    static void process_one_work(struct worker *worker, struct work_struct *work)
    __releases(&pool->lock)
