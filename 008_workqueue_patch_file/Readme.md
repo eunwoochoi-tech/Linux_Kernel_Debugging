@@ -1,5 +1,5 @@
 ## 1. bcm2835_mailbox.c
-### bcm2835_mbox_irq 인터럽트 핸들러에서 인터럽트 후반부 기업으로 workqueue를 적용시켜 보기 위함
+### bcm2835_mbox_irq 인터럽트 핸들러에서 인터럽트 후반부 기법으로 workqueue를 적용시켜 보기 위함
 
 ### line 36 ~ 37 : workqueue를 사용하기 위해 헤더파일 include 및 work구조체 선언
 ``` c
