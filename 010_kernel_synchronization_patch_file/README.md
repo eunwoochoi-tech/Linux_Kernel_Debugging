@@ -10,8 +10,10 @@
 773 +   {
 774 +       trace_printk("[++] comm:%s, pid:%d, from(%pS) \n", current->comm, current->pid, (void*)__builtin_return_address(0));
 775 +   }
+```
 
 ### line 782 ~ 832 : 현재정보 출력 -> global_func_exe_times변수의 값 1 증가 -> trace_function_dummy_call호출 -> 현재 정보 다시 출력
+``` c
 777     void __noreturn do_exit(long code)
 778     {
 779         ------
