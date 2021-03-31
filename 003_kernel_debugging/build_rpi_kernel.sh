@@ -6,18 +6,96 @@ CROSS_COMPILE=arm-linux-gnueabihf-
 echo "configure build out path"
 
 KERNEL_TOP_PATH=$(cd ~; pwd;)
-OUTPUT="$KERNEL_TOP_PATH/out"
+OUTPUT="$KERNEL_TOP_PATH/Desktop/kernel/out"
 echo "$KERNEL_TOP_PATH"
 echo "$OUTPUT"
 
 KERNEL=kernel7
-BUILD_LOG="$KERNEL_TOP_PATH/rpi_build_log.txt"
+BUILD_LOG="$KERNEL_TOP_PATH/Desktop/kernel/rpi_build_log.txt"
 
 echo "move kernel source"
-cd $KERNEL_TOP_PATH/linux
+cd $KERNEL_TOP_PATH/Desktop/kernel/linux
 
 echo "make defconfig"
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE O=$OUTPUT bcm2709_defconfig
 
 echo "kernel build"
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE O=$OUTPUT zImage modules dtbs -j8 2>&1 | tee $BUILD_LOG
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
