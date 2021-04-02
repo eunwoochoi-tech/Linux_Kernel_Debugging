@@ -26,3 +26,51 @@
 833         ------
 952     }
 ```
+
+## 2. spinlock.c
+### 목표 : spinlock을 획득하기 전, 획득한 후, 릴리즈하기 전, 릴리즈 후 의 next와 owner의 값을 확인해보기 위함
+### line 162, 169 : spinlock획득 전의 spinlock값과 __raw_spin_lock_irqsave함수 호출 후 spinlock을 획득한 상태의 spinlock값을 출력
+### line 208, 216 : spinlock릴리즈 전의 spinlock값과 __raw_spin_unlock_irqsave함수 호출 후 spinlock를 릴리즈한 상태의 spinlock값을 출력
+```c
+153   unsigned long __lockfunc _raw_spin_lock_irqsave(raw_spinlock_t *lock)
+154   {
+155 +     // return __raw_spin_lock_irqsave(lock);
+156 +     unsigned long ret_flags;
+157 +     arch_spinlock_t lockval;
+158 
+159 +     if (901 == raspbian_debug_state)
+160 +     {
+161 +         lockval = lock->raw_lock;
+162 +         trace_printk("[+] start spin_lock[%p] owner: 0x%x, next: 0x%x, process: %p \n", lock, lockval.tickets.owne    r, lockval.tickets.next, current);
+163 +     }
+164 
+165 +     ret_flags = __raw_spin_lock_irqsave(lock);
+166 +     if (901 == raspbian_debug_state)
+167 +     {
+168 +         lockval = lock->raw_lock;
+169 +         trace_printk("[+] end spin_lock[%p] owner: 0x%x, next: 0x%x, process: %p \n", lock, lockval.tickets.owner,     lockval.tickets.next, current);
+170 +     }
+171 
+172 +     return ret_flags;
+173 }
+------
+202   void __lockfunc _raw_spin_unlock_irqrestore(raw_spinlock_t *lock, unsigned long flags)
+203   {
+204 +     arch_spinlock_t lockval;
+205 +     if (901 == raspbian_debug_state)
+206 +     {
+207 +         lockval = lock->raw_lock;
+208 +         trace_printk("[-] start spin_unlock[%p] owner: 0x%x, next: 0x%x, process: %p \n", lock, lockval.tickets.ow    ner, lockval.tickets.next, current);
+209 +     }
+210 
+211       __raw_spin_unlock_irqrestore(lock, flags);
+212 
+213 +     if (901 == raspbian_debug_state)
+214 +     {
+215 +         lcokval = lock->raw_lock;
+216 +         trace_printk("[-] end spin_unlock[%p] owner: 0x%x, next: 0x%x, process: %p \n", lock, lockval.tickets.owne    r, lockval.tickets.next, current);
+217 +     }
+219   }
+
+```
+
