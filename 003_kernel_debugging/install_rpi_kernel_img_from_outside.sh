@@ -3,14 +3,16 @@
 ARCH=arm
 CROSS_COMPILE=arm-linux-gnueabihf-
 
-KERNEL_TOP_PATH=$(cd ~; pwd)
+KERNEL_TOP_PATH=$(cd ~; pwd)/Desktop/kernel
 OUTPUT="$KERNEL_TOP_PATH/out"
 echo $OUTPUT
 
 cd $KERNEL_TOP_PATH/linux
 
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE O=$OUTPUT modules_install
-scp -P 6666 $OUTPUT/arch/arm/boot/dts/*.dtb pi@112.155.213.28:/home/pi/temp/boot
-scp -P 6666 $OUTPUT/arch/arm/boot/dts/overlays/*.dtb* pi@112.155.213.28:/home/pi/temp/boot/overlays
-# scp $OUTPUT/arch/arm/boot/dts/overlays/README pi@192.168.219.106:/home/pi/temp/boot/overlays
-scp -P 6666 $OUTPUT/arch/arm/boot/zImage pi@112.155.213.28:/home/pi/temp/boot/kernel7.img
+scp $OUTPUT/arch/arm/boot/dts/*.dtb pi@192.168.219.106:/home/pi/temp/boot
+scp $OUTPUT/arch/arm/boot/dts/overlays/*.dtb* pi@192.168.219.106:/home/pi/temp/boot/overlays
+scp $OUTPUT/arch/arm/boot/zImage pi@192.168.219.106:/home/pi/temp/boot/kernel7.img
+#scp -P 6666 $OUTPUT/arch/arm/boot/dts/*.dtb pi@112.155.213.28:/home/pi/temp/boot
+#scp -P 6666 $OUTPUT/arch/arm/boot/dts/overlays/*.dtb* pi@112.155.213.28:/home/pi/temp/boot/overlays
+#scp -P 6666 $OUTPUT/arch/arm/boot/zImage pi@112.155.213.28:/home/pi/temp/boot/kernel7.img
