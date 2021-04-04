@@ -74,3 +74,58 @@
 
 ```
 
+## 3. mutex.c
+### 목표 : fastpath방식으로 mutex를 획득할 때 mutex의 owner의 값의 변화를 보기 위함
+### line 255 ~ 274 : mutex의 획득전 owner와 획득후 owner의 값을 출력
+### line 724 ~ 749 : mutex를 릴리즈하기 전 owner와 릴리즈 후의 owner의 값을 출력
+``` c
+ 255   void __sched mutex_lock(struct mutex *lock)
+ 256   {
+ 257 +     void* mutex_addr = NULL;
+ 258
+ 259 +     if (902 == raspbian_debug_state)
+ 260 +     {
+ 261 +         mutex_addr = (void*)lock;
+ 262 +         trace_printk("[+][fastpath] mutex_lock[%p] start.. owner:%lx, current_process:%lx\n", mu     tex_addr, atomic_long_read(&lock->owner), (long)current);
+ 263 +     }
+ 264
+ 265       might_sleep();
+ 266
+ 267       if (!__mutex_trylock_fast(lock))
+ 268           __mutex_lock_slowpath(lock);
+ 269
+ 270 +     if (902 == raspbian_debug_state)
+ 271 +     {
+ 272 +         trace_printk("[+][fastpath] mutex_lock[%p] start.. owner:%lx, current_process:%lx\n", mu     tex_addr, atomic_long_read(&lock->owner), (long)current);
+ 273 +     }
+ 274   }
+```
+
+```c
+ 724   void __sched mutex_unlock(struct mutex *lock)
+ 725   {
+ 726 +     void* mutex_addr = NULL;
+ 727
+ 728 +     if (902 == raspbian_debug_state)
+ 729 +     {
+ 730 +         mutex_addr = lock;
+ 731 +         trace_printk("[-] mutex_unlock[%p] start.. owner:0x%lx, current_process:%lx\n", mutex_ad     dr, atomic_long_read(&lock->owner), (long)current);
+ 732 +     }
+ 733   #ifndef CONFIG_DEBUG_LOCK_ALLOC
+ 734
+ 735 +     // if (__mutex_unlock_fast(lock))
+ 736 +     //  return;
+ 737 +     if (__mutex_unlock_fast(lock))
+ 738 +     {
+ 739 +         if (902 == raspbian_debug_state)
+ 740 +         {
+ 741 +             trace_printk("[-] mutex_unlock[%p] end.. owner:0x%lx, current_process:%lx\n", mutex_     addr, atomic_long_read(&lock->owner), (long)current);
+ 742 +         }
+ 743 + 
+ 744 +         return;
+ 745 +     }
+ 746
+ 747 #endif
+ 748     __mutex_unlock_slowpath(lock, _RET_IP_);
+ 749 }
+```
